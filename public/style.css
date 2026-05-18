@@ -179,3 +179,53 @@ canvas {
 
 .high { background: #ffdada; }
 .medium { background: #fff3cd; }
+
+/* MOBILE RESPONSIVE */
+@media screen and (max-width: 768px) {
+
+  body {
+    padding: 10px;
+  }
+
+  .dashboard {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .section {
+    padding: 15px;
+  }
+
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  h1 {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .row {
+    font-size: 14px;
+  }
+
+  .alert,
+  .action {
+    font-size: 14px;
+  }
+}
