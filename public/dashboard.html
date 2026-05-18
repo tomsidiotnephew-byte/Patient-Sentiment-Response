@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <h1>Patient Sentiment Dashboard</h1>
+  <p class="subtitle">Real-time feedback overview</p>
+
+  <!-- ALERTS -->
+  <div id="alertBox"></div>
+
+  <!-- KPI CARDS -->
+  <div class="grid">
+    <div class="card"><h2 id="total">0</h2><p>Total Feedback</p></div>
+    <div class="card"><h2 id="wait">0 min</h2><p>Avg Wait</p></div>
+    <div class="card"><h2 id="queue">0</h2><p>In Queue</p></div>
+    <div class="card"><h2 id="satisfaction">0%</h2><p>Satisfaction</p></div>
+  </div>
+
+  <!-- CHART -->
+  <div class="section">
+    <h3>Sentiment Breakdown</h3>
+    <canvas id="pieChart"></canvas>
+  </div>
+
+  <!-- LINE CHART -->
+  <div class="section">
+    <h3>Sentiment Over Time</h3>
+    <canvas id="lineChart"></canvas>
+  </div>
+
+  <!-- QUEUE -->
+  <div class="section">
+    <h3>Queue Status</h3>
+    <div id="queueList"></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="section">
+    <h3>Suggested Actions</h3>
+    <div id="actions"></div>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div class="section">
+    <h3>Recent Feedback</h3>
+    <div id="feedbackList"></div>
+  </div>
+
+</div>
+
+<script>
+const socket = io();
+
+// PIE CHART
+const pieChart = new Chart(document.getElementById("pieChart"), {
+  type: "doughnut",
+  data: {
+    labels: ["Happy", "Neutral", "Frustrated"],
+    datasets: [{ data: [0,0,0] }]
+  }
+});
+
+// LINE CHART
+const lineChart = new Chart(document.getElementById("lineChart"), {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [
+      { label: "Happy", data: [] },
+      { label: "Frustrated", data: [] }
+    ]
+  }
+});
+
+socket.on("update", (data) => {
+
+  const list = data.feedbackData || [];
+
+  // KPI
+  document.getElementById("total").innerText = list.length;
+  document.getElementById("wait").innerText = data.waitingTime + " min";
+  document.getElementById("queue").innerText = data.queueLength;
+
+  let positive = 0, neutral = 0, negative = 0;
+
+  list.forEach(f => {
+    if (f.sentiment === "positive") positive++;
+    else if (f.sentiment === "neutral") neutral++;
+    else negative++;
+  });
+
+  const total = list.length || 1;
+  const satisfaction = ((positive / total) * 100).toFixed(0);
+  document.getElementById("satisfaction").innerText = satisfaction + "%";
+
+  // PIE UPDATE
+  pieChart.data.datasets[0].data = [positive, neutral, negative];
+  pieChart.update();
+
+  // ALERT
+  const alertBox = document.getElementById("alertBox");
+  alertBox.innerHTML = "";
+
+  if (negative / total > 0.5) {
+    alertBox.innerHTML += `<div class="alert red">High frustration detected</div>`;
+  }
+  if (data.waitingTime > 20) {
+    alertBox.innerHTML += `<div class="alert yellow">Wait time too high</div>`;
+  }
+
+  // QUEUE LIST
+  document.getElementById("queueList").innerHTML = `
+    <div class="row">Counter 1 - ${data.queueLength} in queue</div>
+    <div class="row">Counter 2 - ${Math.floor(data.queueLength/2)} in queue</div>
+  `;
+
+  // ACTIONS
+  let actionsHTML = "";
+  if (negative / total > 0.5) {
+    actionsHTML += `<div class="action high">Open new counter</div>`;
+  }
+  if (data.waitingTime > 15) {
+    actionsHTML += `<div class="action medium">Add staff</div>`;
+  }
+  document.getElementById("actions").innerHTML = actionsHTML;
+
+  // RECENT FEEDBACK
+  const recent = list.slice(-5).reverse();
+  document.getElementById("feedbackList").innerHTML =
+    recent.map(f => `<div class="row">${f.emotion} - ${f.comment || ""}</div>`).join("");
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Feedback</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="badge">● Live Feedback</div>
+
+  <h1>How are you feeling?</h1>
+  <p class="subtitle">Your feedback helps us improve your experience</p>
+
+  <div class="emotion-container">
+    <div class="emotion-card" onclick="selectEmotion('happy', this)">
+      <div class="emoji">😊</div>
+      <p>Happy</p>
+    </div>
+
+    <div class="emotion-card" onclick="selectEmotion('neutral', this)">
+      <div class="emoji">😐</div>
+      <p>Neutral</p>
+    </div>
+
+    <div class="emotion-card" onclick="selectEmotion('frustrated', this)">
+      <div class="emoji">😤</div>
+      <p>Frustrated</p>
+    </div>
+  </div>
+
+  <div class="comment-box">
+    <label>Add a comment (optional)</label>
+    <textarea id="comment" placeholder="Tell us more..."></textarea>
+  </div>
+
+  <button class="submit-btn" onclick="submitFeedback()">Submit Feedback</button>
+
+</div>
+
+<script>
+let selectedEmotion = "";
+
+function selectEmotion(emotion, element) {
+  selectedEmotion = emotion;
+
+  document.querySelectorAll(".emotion-card").forEach(card => {
+    card.classList.remove("active");
+  });
+
+  element.classList.add("active");
+}
+
+function submitFeedback() {
+  const comment = document.getElementById("comment").value;
+
+  fetch("/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      emotion: selectedEmotion,
+      comment: comment
+    })
+  });
+
+  alert("Feedback submitted!");
+}
+</script>
+
+</body>
+</html>
