@@ -170,16 +170,7 @@ datasets:[{
 
 label:"Cases",
 
-data:[
-1,
-37,
-8,
-4,
-19,
-6,
-4,
-5
-]
+data:[0,0,0,0,0,0,0,0]
 
 }]
 }
@@ -211,21 +202,68 @@ socket.on("update", (data) => {
   pieChart.data.datasets[0].data = [positive, neutral, negative];
   pieChart.update();
 
+  const currentTime = new Date().toLocaleTimeString();
+
+lineChart.data.labels.push(currentTime);
+
+lineChart.data.datasets[0].data.push(positive);
+
+lineChart.data.datasets[1].data.push(negative);
+
+if(lineChart.data.labels.length > 10){
+
+lineChart.data.labels.shift();
+
+lineChart.data.datasets[0].data.shift();
+
+lineChart.data.datasets[1].data.shift();
+
+}
+
+lineChart.update();
+
+  // COMPLAINT BAR CHART
+complaintChart.data.datasets[0].data = [
+
+data.complaints.Cleanliness,
+
+data.complaints.Service,
+
+data.complaints.Safety,
+
+data.complaints.Equipment,
+
+data.complaints.Treatment,
+
+data.complaints.Questions,
+
+data.complaints.Management,
+
+data.complaints.Communication
+
+];
+
+complaintChart.update();
+
   // ALERT
   const alertBox = document.getElementById("alertBox");
   alertBox.innerHTML = "";
-  if (37 > 30) {
-    alertBox.innerHTML +=
-    `<div class="alert red">
-    High number of Service complaints (37)
-    </div>`;
+if (data.complaints.Service >= 40) {
+
+alertBox.innerHTML +=
+`<div class="alert red">
+High number of Service complaints
+</div>`;
+
 }
 
-if (19 > 15) {
-    alertBox.innerHTML +=
-    `<div class="alert yellow">
-    Treatment complaints are still high (19)
-    </div>`;
+if (data.complaints.Treatment >= 20) {
+
+alertBox.innerHTML +=
+`<div class="alert yellow">
+Treatment complaints increasing
+</div>`;
+
 }
 
   if (negative / total > 0.5) {
@@ -243,18 +281,68 @@ if (19 > 15) {
 
   // ACTIONS
   let actionsHTML = "";
-  if (negative / total > 0.5) {
-    actionsHTML += `<div class="action high">Open new counter</div>`;
-  }
-  if (data.waitingTime > 15) {
-    actionsHTML += `<div class="action medium">Add staff</div>`;
-  }
-  document.getElementById("actions").innerHTML = actionsHTML;
+
+if(data.complaints.Service >= 40){
+
+actionsHTML +=
+`<div class="action high">
+Open another registration counter
+</div>`;
+
+}
+
+if(data.complaints.Treatment >= 20){
+
+actionsHTML +=
+`<div class="action medium">
+Assign additional nurses
+</div>`;
+
+}
+
+if(data.complaints.Cleanliness >= 5){
+
+actionsHTML +=
+`<div class="action medium">
+Notify housekeeping
+</div>`;
+
+}
+
+if(data.complaints.Safety >= 10){
+
+actionsHTML +=
+`<div class="action high">
+Notify hospital security
+</div>`;
+
+}
+
+if(data.waitingTime > 20){
+
+actionsHTML +=
+`<div class="action medium">
+Reduce patient waiting time
+</div>`;
+
+}
 
   // RECENT FEEDBACK
   const recent = list.slice(-5).reverse();
   document.getElementById("feedbackList").innerHTML =
-    recent.map(f => `<div class="row">${f.emotion} - ${f.comment || ""}</div>`).join("");
+recent.map(f => `
+
+<div class="row">
+
+<strong>${f.category}</strong><br>
+
+${f.emotion}<br>
+
+${f.comment || ""}
+
+</div>
+
+`).join("");
 
 });
 </script>

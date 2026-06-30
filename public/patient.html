@@ -32,6 +32,23 @@
     </div>
   </div>
 
+  <div class="category-box">
+ <label for="category">Complaint Category</label>
+
+<select id="category" name="category">
+    <option value="">Select Category</option>
+    <option value="Cleanliness">Cleanliness</option>
+    <option value="Service">Service</option>
+    <option value="Safety">Safety</option>
+    <option value="Equipment">Equipment / Facilities</option>
+    <option value="Treatment">Treatment</option>
+    <option value="Questions">Questions / Suggestions</option>
+    <option value="Management">Management</option>
+    <option value="Communication">Publicity / Communication</option>
+</select>
+
+</div>
+
   <div class="comment-box">
     <label>Add a comment (optional)</label>
     <textarea id="comment" placeholder="Tell us more..."></textarea>
@@ -54,20 +71,67 @@ function selectEmotion(emotion, element) {
   element.classList.add("active");
 }
 
-function submitFeedback() {
-  const comment = document.getElementById("comment").value;
-
-  fetch("/feedback", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      emotion: selectedEmotion,
-      comment: comment
-    })
-  });
-
-  alert("Feedback submitted!");
+if (!selectedEmotion) {
+    alert("Please select an emotion.");
+    return;
 }
+
+if (!category) {
+    alert("Please select a complaint category.");
+    return;
+}
+
+function submitFeedback() {
+const category =
+document.getElementById("category").value;
+
+const comment =
+document.getElementById("comment").value;
+fetch("/feedback", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        emotion: selectedEmotion,
+        category: category,
+        comment: comment
+    })
+})
+.then(response => {
+    if (response.ok) {
+        alert("Feedback submitted successfully!");
+
+        // Reset form
+        selectedEmotion = "";
+
+        document.querySelectorAll(".emotion-card").forEach(card => {
+            card.classList.remove("active");
+        });
+
+        document.getElementById("category").value = "";
+        document.getElementById("comment").value = "";
+
+    } else {
+        alert("Submission failed.");
+    }
+});
+}
+
+<div class="comment-box">
+<label for="waitingTime">
+Estimated Waiting Time
+</label>
+
+<select id="waitingTime">
+<option value="5">0-5 minutes</option>
+<option value="10">5-10 minutes</option>
+<option value="20">10-20 minutes</option>
+<option value="30">20-30 minutes</option>
+<option value="40">30+ minutes</option>
+</select>
+</div>
+
 </script>
 
 </body>
