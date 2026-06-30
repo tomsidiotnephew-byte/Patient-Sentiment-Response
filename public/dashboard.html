@@ -29,6 +29,32 @@
     <div class="card"><h2 id="satisfaction">0%</h2><p>Satisfaction</p></div>
   </div>
 
+  <div class="section">
+  <h3>Hospital Complaint Summary (2025)</h3>
+
+  <div class="grid">
+    <div class="card">
+      <h2>84</h2>
+      <p>Total Cases</p>
+    </div>
+
+    <div class="card">
+      <h2>31</h2>
+      <p>Completed</p>
+    </div>
+
+    <div class="card">
+      <h2>4</h2>
+      <p>Compliments</p>
+    </div>
+
+    <div class="card">
+      <h2>49</h2>
+      <p>In Process</p>
+    </div>
+  </div>
+</div>
+
   <!-- CHART -->
   <div class="section">
     <h3>Sentiment Breakdown</h3>
@@ -40,6 +66,11 @@
     <h3>Sentiment Over Time</h3>
     <canvas id="lineChart"></canvas>
   </div>
+
+  <div class="section">
+    <h3>Complaint Categories (2025)</h3>
+    <canvas id="complaintChart"></canvas>
+</div>
 
   <!-- QUEUE -->
   <div class="section">
@@ -58,6 +89,39 @@
     <h3>Recent Feedback</h3>
     <div id="feedbackList"></div>
   </div>
+
+  <div class="section">
+
+<h3>Complaint Status by Category</h3>
+
+<table class="complaintTable">
+
+<tr>
+<th>Category</th>
+<th>Done</th>
+<th>Compliment</th>
+<th>In Process</th>
+</tr>
+
+<tr><td>Cleanliness</td><td>1</td><td>-</td><td>-</td></tr>
+
+<tr><td>Service</td><td>15</td><td>3</td><td>19</td></tr>
+
+<tr><td>Safety</td><td>2</td><td>-</td><td>6</td></tr>
+
+<tr><td>Equipment</td><td>2</td><td>-</td><td>2</td></tr>
+
+<tr><td>Treatment</td><td>4</td><td>1</td><td>14</td></tr>
+
+<tr><td>Questions</td><td>3</td><td>-</td><td>3</td></tr>
+
+<tr><td>Management</td><td>2</td><td>-</td><td>2</td></tr>
+
+<tr><td>Communication</td><td>2</td><td>-</td><td>3</td></tr>
+
+</table>
+
+</div>
 
 </div>
 
@@ -83,6 +147,43 @@ const lineChart = new Chart(document.getElementById("lineChart"), {
       { label: "Frustrated", data: [] }
     ]
   }
+});
+
+const complaintChart = new Chart(
+document.getElementById("complaintChart"),
+{
+type:"bar",
+
+data:{
+labels:[
+"Cleanliness",
+"Service",
+"Safety",
+"Equipment",
+"Treatment",
+"Questions",
+"Management",
+"Communication"
+],
+
+datasets:[{
+
+label:"Cases",
+
+data:[
+1,
+37,
+8,
+4,
+19,
+6,
+4,
+5
+]
+
+}]
+}
+
 });
 
 socket.on("update", (data) => {
@@ -113,6 +214,19 @@ socket.on("update", (data) => {
   // ALERT
   const alertBox = document.getElementById("alertBox");
   alertBox.innerHTML = "";
+  if (37 > 30) {
+    alertBox.innerHTML +=
+    `<div class="alert red">
+    High number of Service complaints (37)
+    </div>`;
+}
+
+if (19 > 15) {
+    alertBox.innerHTML +=
+    `<div class="alert yellow">
+    Treatment complaints are still high (19)
+    </div>`;
+}
 
   if (negative / total > 0.5) {
     alertBox.innerHTML += `<div class="alert red">High frustration detected</div>`;

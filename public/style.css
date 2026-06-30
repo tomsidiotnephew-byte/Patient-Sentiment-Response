@@ -229,3 +229,25 @@ canvas {
     font-size: 14px;
   }
 }
+
+.complaintTable{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+.complaintTable th{
+background:#009688;
+color:white;
+padding:12px;
+}
+
+.complaintTable td{
+padding:10px;
+text-align:center;
+border-bottom:1px solid #ddd;
+}
+
+.complaintTable tr:hover{
+background:#f2f2f2;
+}
