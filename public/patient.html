@@ -54,6 +54,20 @@
     <textarea id="comment" placeholder="Tell us more..."></textarea>
   </div>
 
+  <div class="comment-box">
+<label for="waitingTime">
+Estimated Waiting Time
+</label>
+
+<select id="waitingTime">
+<option value="5">0-5 minutes</option>
+<option value="10">5-10 minutes</option>
+<option value="20">10-20 minutes</option>
+<option value="30">20-30 minutes</option>
+<option value="40">30+ minutes</option>
+</select>
+</div>
+
   <button class="submit-btn" onclick="submitFeedback()">Submit Feedback</button>
 
 </div>
@@ -71,6 +85,16 @@ function selectEmotion(emotion, element) {
   element.classList.add("active");
 }
 
+function submitFeedback() {
+const category =
+document.getElementById("category").value;
+
+const comment =
+document.getElementById("comment").value;
+
+const waitingTime =
+document.getElementById("waitingTime").value;
+
 if (!selectedEmotion) {
     alert("Please select an emotion.");
     return;
@@ -81,12 +105,6 @@ if (!category) {
     return;
 }
 
-function submitFeedback() {
-const category =
-document.getElementById("category").value;
-
-const comment =
-document.getElementById("comment").value;
 fetch("/feedback", {
     method: "POST",
     headers: {
@@ -95,7 +113,8 @@ fetch("/feedback", {
     body: JSON.stringify({
         emotion: selectedEmotion,
         category: category,
-        comment: comment
+        comment: comment,
+        waitingTime: waitingTime
     })
 })
 .then(response => {
@@ -111,6 +130,7 @@ fetch("/feedback", {
 
         document.getElementById("category").value = "";
         document.getElementById("comment").value = "";
+        document.getElementById("waitingTime").selectedIndex = 0;
 
     } else {
         alert("Submission failed.");
@@ -118,19 +138,6 @@ fetch("/feedback", {
 });
 }
 
-<div class="comment-box">
-<label for="waitingTime">
-Estimated Waiting Time
-</label>
-
-<select id="waitingTime">
-<option value="5">0-5 minutes</option>
-<option value="10">5-10 minutes</option>
-<option value="20">10-20 minutes</option>
-<option value="30">20-30 minutes</option>
-<option value="40">30+ minutes</option>
-</select>
-</div>
 
 </script>
 

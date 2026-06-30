@@ -48,7 +48,9 @@ emotion,
 
 category,
 
-comment
+comment,
+
+waitingTime
 
 } = req.body;
 
@@ -58,6 +60,7 @@ comment
     emotion,
     category,
     comment,
+    waitingTime,
     sentiment,
     time: new Date()
   };
